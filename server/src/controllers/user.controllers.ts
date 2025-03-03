@@ -1,6 +1,8 @@
 const User = require("../models/user");
 import { FastifyRequest, FastifyReply } from "fastify";
 import bcrypt from 'bcrypt'
+const jwt = require('jsonwebtoken');
+require("dotenv").config();
 
 export const getAllUsers = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
@@ -49,7 +51,9 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
         const passwordValid = await bcrypt.compare(password, user.password)
         if (!passwordValid) { return reply.status(401).send({ message: "Invalid email or password." }); }
 
-        return reply.status(200).send({ message: "Login successful" });
+        // if it matched this will run
+        const token = jwt.sign({ "email": user.email }, process.env.SECRET_KEY)
+        return reply.status(200).send({ message: "Login successful", token });
     } catch (error) {
         console.error("Error during login:", error);
         return reply.status(500).send({ message: "Internal Server Error", error: error.message });
