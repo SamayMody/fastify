@@ -52,7 +52,7 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
         if (!passwordValid) { return reply.status(401).send({ message: "Invalid email or password." }); }
 
         // if it matched this will run
-        const token = jwt.sign({ "email": user.email }, process.env.SECRET_KEY)
+        const token = jwt.sign({ "email": user.email }, process.env.SECRET_KEY, { expiresIn: '15m' })
         return reply.status(200).send({ message: "Login successful", token });
     } catch (error) {
         console.error("Error during login:", error);
